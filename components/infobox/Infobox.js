@@ -5,10 +5,6 @@ import Legend from '../legend/Legend'
 import TMCInspector from './tmcInspector'
 
  class Sidebar extends Component {
-  
-  tmcDisplay () {
-    return this.props.tmc ? <TMCInspector /> : <span />
-  }
 
   render() {
     const { theme } = this.props
@@ -48,7 +44,8 @@ import TMCInspector from './tmcInspector'
     }
 
     const activeLayers = Object.values(this.props.layers).filter(l => l.active),
-      activeLegends = activeLayers.reduce((a, c) => c.legend && c.legend.active && c.legend.domain.length ? a.concat(c.legend) : a, []);
+      activeLegends = activeLayers.reduce((a, c) => c.legend && c.legend.active && c.legend.domain.length ? a.concat(c.legend) : a, []),
+      activeInfoBoxes = activeLayers.reduce((a, c) => c.infoBoxes ? a.concat(Object.values(c.infoBoxes).filter(i => i.show)) : a, []);
     return (
       <div className='sidebar-container' style={sideBarContainerStyle}>
         <div className='sidebar' style={sidebarStyle}>
@@ -57,7 +54,9 @@ import TMCInspector from './tmcInspector'
               {
                 activeLegends.map((l, i) => <Legend key={ i } theme={ this.props.theme } { ...l }/>)
               }
-              {this.tmcDisplay()}
+              {
+                activeInfoBoxes.map(i => React.createElement(i.comp))
+              }
             </div>
           </div>
         </div>

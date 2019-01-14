@@ -1,4 +1,4 @@
-import layers from '../layers'
+import layers from 'layers'
 import LightTheme from 'components/common/themes/dark'
 // var update = require('react/lib/update')
 
@@ -19,6 +19,8 @@ const FETCH_LAYER_DATA_SUCESS = 'FETCH_LAYER_DATA_SUCESS'
 const FETCH_LAYER_DATA_ERROR = 'FETCH_LAYER_DATA_ERROR'
 const UPDATE_LAYER_FILTER = 'UPDATE_LAYER_FILTER' 
 const UPDATE_TOOLTIP = "UPDATE_TOOLTIP"
+const TOGGLE_LAYER_MODAL = "TOGGLE_LAYER_MODAL"
+const TOGGLE_INFO_BOX = "TOGGLE_INFO_BOX"
 
 const FORCE_UPDATE = 'FORCE_UPDATE'
 
@@ -136,6 +138,22 @@ export const fetchLayerData = (layerName) => {
   }
 }
 
+export const updateLegend = (layerName, update) =>
+  (dispatch, getState) => {
+    const layer = getState().map.layers[layerName];
+    if (!layer.legend) return;
+
+    layer.loading = true;
+    dispatch(forceUpdate());
+
+    layer.legend = {
+      ...layer.legend,
+      ...update
+    }
+    return layer.legend.onChange(layer)
+      .then(data => dispatch(receiveData(data, layerName)))
+  }
+
 export const forceUpdate = () =>
   dispatch => dispatch({
     type: FORCE_UPDATE
@@ -146,6 +164,29 @@ export const updateTooltip = update =>
     type: UPDATE_TOOLTIP,
     update
   })
+
+export const toggleModal = layerName =>
+  (dispatch, getState) => {
+    const layer = getState().map.layers[layerName],
+      show = layer.modal ? !layer.modal.show : false;
+    dispatch({
+      type: TOGGLE_LAYER_MODAL,
+      layerName,
+      show
+    })
+  }
+export const toggleInfoBox = (layerName, infoBoxName) =>
+  (dispatch, getState) => {
+    const layer = getState().map.layers[layerName],
+      infobox = layer.infoBoxes[infoBoxName],
+      show = !infobox.show;
+    dispatch({
+      type: TOGGLE_INFO_BOX,
+      layerName,
+      infoBoxName,
+      show
+    })
+  }
 
 // export const fetchLayerData = (layerName) => {
 //   return dispatch => {
@@ -185,6 +226,28 @@ let initialState = {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
+  [TOGGLE_LAYER_MODAL]: (state=initialState, action) => {
+    const newState = { ...state };
+    ++newState.update;
+    for (const ln in newState.layers) {
+      const layer = newState.layers[ln];
+      if (layer.modal) {
+        layer.modal.show = false;
+      }
+    }
+    const layer = newState.layers[action.layerName];
+    if (layer.modal) {
+      layer.modal.show = action.show;
+    }
+    return newState;
+  },
+  [TOGGLE_INFO_BOX]: (state=initialState, action) => {
+    const newState = { ...state };
+    ++newState.update;
+    const layer = newState.layers[action.layerName];
+    layer.infoBoxes[action.infoBoxName].show = action.show;
+    return newState;
+  },
   [UPDATE_TOOLTIP]: (state=initialState, action) => ({
     ...state,
     tooltip: {
