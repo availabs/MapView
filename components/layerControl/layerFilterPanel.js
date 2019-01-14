@@ -90,7 +90,9 @@ const StyledFilterContent = styled.div`
               <div>
 
               {filter.name} - {filter.value}
-                <input type="range" min={filter.min || 0} max={filter.max || 100} 
+                <input type="range" 
+                  min={filter.min || 0} 
+                  max={filter.max || 100} 
                   value={filter.value} 
                   style={sliderStyle} 
                   onChange={dispatchUpdateSlider} 
