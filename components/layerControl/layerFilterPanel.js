@@ -85,12 +85,12 @@ const StyledFilterContent = styled.div`
               </SubmitButton>
             )
           break;
-          case 'time-slider':
+          case 'slider':
             return (
               <div>
 
               {filter.name} - {filter.value}
-                <input type="range" min="0" max="287" 
+                <input type="range" min={filter.min || 0} max={filter.max || 100} 
                   value={filter.value} 
                   style={sliderStyle} 
                   onChange={dispatchUpdateSlider} 
