@@ -255,7 +255,7 @@ const ACTION_HANDLERS = {
       }
     })
     ++newState.update;
-console.log("TESTING")
+console.log("TESTING SOME MORE")
     return newState;
   },
   [FETCH_LAYER_DATA]: (state = initialState, action) => {
