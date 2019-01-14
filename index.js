@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import deepEqual from 'deep-equal'
 import {MAPBOX_TOKEN} from 'store/config'
 import mapboxgl from 'mapbox-gl/dist/mapbox-gl'
-import { select, setHover, setActiveTMCS, setEpoch } from './map_functions'
 import { initializeMap } from './store/MapStore'
 
 import { connect } from 'react-redux';
